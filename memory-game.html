@@ -89,7 +89,7 @@
 
         .border-pad {
             width: 150px;
-            height: 120px;
+            height: 10px;
             animation: fadeBorder 1s forwards;
         }
         .win-loose {
@@ -139,6 +139,9 @@
             font-size: 20px; 
             display: none;
         }
+        #name-title{
+            margin-bottom: 8px;
+        }
 
         @media (max-width: 600px) {
             .middle-paragraph {
@@ -148,8 +151,21 @@
                 font-size: 16px; 
             }
             .green-box, .red-box, .yellow-box, .blue-box {
-                height: 80px; 
+                height: 120px; 
+                width: 140px;
                 font-size: 14px; 
+            }
+            .main-box{
+                display: grid;
+                padding: 8px;
+                grid-template-columns: repeat(2, 1fr);
+                grid-gap: 10px; 
+            }
+            .top-part{
+                display: flex;
+                margin-bottom: 40px;
+                margin-top: 40px;
+                justify-content: center;
             }
         }
         .main-game-contanier{
