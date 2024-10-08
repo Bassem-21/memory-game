@@ -120,7 +120,11 @@
             text-align: center;
         }
         .modal-content h2 {
-            margin: 15px 0;
+            margin-bottom: 13px;
+        }
+        .modal-content p{
+            margin-top: 4px;
+            margin-bottom: 13px;
         }
         .modal button {
             margin: 10px 5px 5px 5px;
@@ -183,13 +187,23 @@
                 margin-top: 8px;
             }
             .mute-button{
-            background-color: beige;
+            background-color: rgb(222, 220, 245);
             padding: 18px 8px 18px 8px;
             border: none;
             margin-right: 7px;
             font-size: 12px;
             border-radius: 17px;
         }
+            .mute-button-pressed{
+                background-color: rgb(255, 217, 0);
+                border: none;
+                padding: 10px 14px 10px 14px;
+                margin-right: 7px;
+                border-radius: 17px;
+                font-family: "Press Start 2P", system-ui;
+                cursor: pointer;
+                color: beige;
+            }
         }
         .main-game-container {
             margin-top: 70px;
@@ -224,7 +238,45 @@
             display:flex;
             align-items: center;
         }
-    </style>
+        /* Instructions Modal Styles */
+        .instructions-modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .instructions-content {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px; 
+            text-align: center;
+        }
+        .instructions-content p{
+            margin-top: 12px;
+        }
+        .instructions-content h2 {
+            margin: 15px 0;
+        }
+        .instructions-content button {
+            margin: 10px;
+            padding: 10px 15px; 
+            border: none;
+            border-radius: 5px;
+            background-color: rgb(33, 165, 0);
+            color: white;
+            cursor: pointer;
+            font-size: 16px; 
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        </style>
 </head>
 <body>
     <div class="top-part-container">
@@ -232,7 +284,7 @@
             <p class="middle-paragraph" id="start" onclick="start()">START!</p>
             <div class="status">
                 <p id="name-title"></p>
-                <p id="level">LEVEL:1</p>
+                <p id="level">LEVEL: 1</p>
             </div>
             <div class="mute-container">
                 <button class="mute-button" id="mute-button" onclick="toggleMute()"><i class="fa-solid fa-volume-off"></i></button>
@@ -240,10 +292,10 @@
         </div>
         <div class="main-game-container">
             <div class="main-box">
-                <div class="green-box" id="green" aria-label="Green Box">GREEN</div>
-                <div class="red-box" id="red" aria-label="Red Box">RED</div>
-                <div class="yellow-box" id="yellow" aria-label="Yellow Box">YELLOW</div>
-                <div class="blue-box" id="blue" aria-label="Blue Box">BLUE</div>
+                <div class="green-box" id="green">GREEN</div>
+                <div class="red-box" id="red">RED</div>
+                <div class="yellow-box" id="yellow">YELLOW</div>
+                <div class="blue-box" id="blue">BLUE</div>
             </div>
         </div>
         <p class="win-loose" id="win-loose"></p>
@@ -254,7 +306,7 @@
     <audio id="sound-yellow" src="./sounds/yellow.mp3"></audio>
     <audio id="sound-blue" src="./sounds/blue.mp3"></audio>
     <audio id="sound-wrong" src="./sounds/wrong.mp3"></audio> 
-
+    
     <div class="modal" id="game-over-modal">
         <div class="modal-content">
             <h2>GAME OVER!</h2>
@@ -262,6 +314,18 @@
             <p>SCORE: <span id="score-display">0</span></p>
             <button onclick="restartGame()">RESTART</button>
             <button onclick="startOver()">NEW GAME</button>
+        </div>
+    </div>
+
+    <div class="instructions-modal" id="instructions-modal">
+        <div class="instructions-content">
+            <h2>Game Instructions</h2>
+            <p>1. Click START to begin the game.</p>
+            <p>2. Follow the color sequence shown.</p>
+            <p>3. Click the colored boxes in the same order.</p>
+            <p>4. If you make a mistake, the game will end.</p>
+            <p>5. Try to get to the highest level!</p>
+            <button onclick="doneInstructions()">DONE</button>
         </div>
     </div>
 
@@ -287,13 +351,14 @@
         let gameOver = false; 
         let isMuted = false;
 
-        // validName();
-
+        validName();
+    
         function validName() {
             const userName = prompt('Enter your name: ');
             if (/^[a-zA-Z]+$/.test(userName)) {
                 nameTitle.innerHTML = userName;
                 userNameDisplay.innerText = "Name: " + userName; 
+                showInstructions(); 
             } else {
                 alert('Incorrect Name, Please try again');
                 validName();
@@ -308,7 +373,7 @@
             userSequence = [];
             level = 1;
             gameOver = false; 
-            levelDisplay.innerText = "LEVEL:" + level;
+            levelDisplay.innerText = "LEVEL: " + level;
             winLoose.innerText = ''; 
             nextRound();
         }
@@ -349,7 +414,7 @@
             resetInactivityTimer(); 
             document.querySelectorAll('.green-box, .red-box, .yellow-box, .blue-box').forEach(box => {
                 box.onclick = () => {
-                    playSound(box.id); 
+                    if (!isMuted) playSound(box.id); 
                     userSequence.push(box.id);
                     highlightBox(box.id);
                     checkUserInput();
@@ -358,11 +423,9 @@
         }
     
         function playSound(color) {
-            if (!isMuted) {
-                const sound = document.getElementById(`sound-${color}`);
-                sound.currentTime = 0; 
-                sound.play();
-            }
+            const sound = document.getElementById(`sound-${color}`);
+            sound.currentTime = 0; 
+            sound.play();
         }
     
         function checkUserInput() {
@@ -372,7 +435,7 @@
                 if (userSequence.length === randomSequence.length) {
                     winLoose.innerText = 'You win! Proceed to the next round';
                     level++;
-                    levelDisplay.innerText = "LEVEL:" + level;
+                    levelDisplay.innerText = "LEVEL: " + level;
                     clearTimeout(inactivityTimer); 
                     setTimeout(() => {
                         winLoose.innerText = ''; 
@@ -380,7 +443,7 @@
                     }, 1000);
                 }
             } else {
-                playSound('wrong'); 
+                if (!isMuted) playSound('wrong'); 
                 winLoose.innerText = 'Wrong! Game Over...';
                 clearTimeout(inactivityTimer);
                 disableUserInput(); 
@@ -397,7 +460,7 @@
     
         function showGameOverModal() {
             clearTimeout(inactivityTimer); 
-            disableUserInput()
+            disableUserInput();
             gameOverModal.style.display = 'flex'; 
             document.getElementById('score-container').style.display = 'block'; 
             scoreDisplay.innerText = level - 1; 
@@ -428,7 +491,7 @@
         function resetInactivityTimer() {
             clearTimeout(inactivityTimer); 
             inactivityTimer = setTimeout(() => {
-                playSound('wrong'); 
+                if (!isMuted) playSound('wrong'); 
                 winLoose.innerText = 'Time out! Game Over...';
                 disableUserInput(); 
                 scoreDisplay.innerText = level - 1; 
@@ -441,9 +504,20 @@
             muteButton.classList.add('mute-button-pressed')
             }
             else{
-                muteButton.classList.remove('mute-button-pressed')
+            muteButton.classList.remove('mute-button-pressed')
             }
         }
+
+        function showInstructions() {
+            document.getElementById('instructions-modal').style.display = 'flex';
+        }
+
+        function doneInstructions() {
+            document.getElementById('instructions-modal').style.display = 'none';
+            startWord.onclick = () => start(); 
+            startWord.innerText = "Start!";
+        }
+        
     </script>
 </body>
 </html>
