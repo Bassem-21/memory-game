@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            background-color: rgb(0, 0, 0);
+        }
+        .top-part {
+            display: flex;
+            margin-bottom: 70px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .middle-paragraph {
+            margin: auto;
+            padding-left: 270px;
+            letter-spacing: 5px;
+            font-size: 45px;
+            font-family: "Press Start 2P", system-ui;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            color: white;
+        }
+        .middle-paragraph:hover {
+            color: rgb(33, 165, 0);
+        }
+        .status {
+            color: rgb(241, 188, 13);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-right: 20px;
+            font-size: 24px;
+            font-family: "Press Start 2P", system-ui;
+        }
+        .main-box {
+            background-color: white;
+            border-radius: 15px;
+            width: 500px;
+            height: 400px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .green-box, .red-box, .yellow-box, .blue-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            margin: auto;
+            width: 180px;
+            height: 140px;
+            cursor: pointer; 
+            font-family: "Press Start 2P", system-ui;
+        }
+        .green-box { background-color: green; }
+        .red-box { background-color: red; }
+        .yellow-box { background-color: yellow; }
+        .blue-box { background-color: blue; }
+
+        .border {
+            animation: fadeBorder 1s forwards;
+        }
+        @keyframes fadeBorder {
+            0% {
+                border: 4px solid black;
+                box-shadow: 0px 0px 4px 10px rgba(255, 0, 0, 0.568);
+            }
+            100% {
+                border: 4px solid transparent;
+                box-shadow: 0px 0px 4px 10px rgba(255, 0, 0, 0.099);
+            }
+        }
+
+        .border-pad {
+            width: 150px;
+            height: 120px;
+            animation: fadeBorder 1s forwards;
+        }
+        .win-loose {
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            font-family: "Press Start 2P", system-ui;
+            margin-top: 20px;
+        }
+
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            font-family: "Press Start 2P", system-ui;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            padding: 5px;   
+            font-family: "Press Start 2P", system-ui;
+        }
+        .modal-content h2 {
+            margin-top: 15px;
+            margin-bottom: 25px;
+        }
+        .modal-content p {
+            margin-top: 8px;
+            margin-bottom: 25px;
+        }
+        .modal button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgb(33, 165, 0);
+            color: white;
+            cursor: pointer;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            font-family: "Press Start 2P", system-ui;
+        }
+
+        .score-display {
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            font-family: "Press Start 2P", system-ui;
+            margin-top: 20px;
+            display: none;
+        }
+        #name-title{
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="top-part">
+            <p class="middle-paragraph" id="start" onclick="start()">Start!</p>
+            <div class="status">
+                <p id="name-title"></p>
+                <p id="level">Level: 1</p>
+            </div>
+        </div>
+        <div>
+            <div class="main-box">
+                <div class="green-box" id="green">Green</div>
+                <div class="red-box" id="red">Red</div>
+                <div class="yellow-box" id="yellow">Yellow</div>
+                <div class="blue-box" id="blue">Blue</div>
+            </div>
+        </div>
+        <p class="win-loose" id="win-loose"></p>
+    </div>
+
+    <audio id="sound-green" src="./sounds/green.mp3"></audio>
+    <audio id="sound-red" src="./sounds/red.mp3"></audio>
+    <audio id="sound-yellow" src="./sounds/yellow.mp3"></audio>
+    <audio id="sound-blue" src="./sounds/blue.mp3"></audio>
+    <audio id="sound-wrong" src="./sounds/wrong.mp3"></audio> 
+
+    <div class="modal" id="game-over-modal">
+        <div class="modal-content">
+            <h2>Game Over!</h2>
+            <p id="user-name-display"></p> 
+            <p>Your score: <span id="score-display">0</span></p>
+            <button onclick="restartGame()">RESTART</button>
+            <button onclick="startOver()">NEW GAME</button>
+        </div>
+    </div>
+
+    <div class="score-display" id="score-container">
+        <p id="final-score" class="win-loose"></p>
+    </div>
+
+    <script>
+        let randomSequence = [];
+        let userSequence = [];
+        let level = 1;
+        let nameTitle = document.getElementById('name-title');
+        let levelDisplay = document.getElementById('level');
+        let startWord = document.getElementById('start');
+        let winLoose = document.getElementById('win-loose');
+        let scoreDisplay = document.getElementById('score-display');
+        let userNameDisplay = document.getElementById('user-name-display'); 
+        let gameOverModal = document.getElementById('game-over-modal');
+        let finalScore = document.getElementById('final-score');
+        let inactivityTimer;
+        let inactivityDuration = 2500;
+
+        validName();
+    
+        function validName() {
+            const userName = prompt('Enter your name: ');
+            if (/^[a-zA-Z]+$/.test(userName)) {
+                nameTitle.innerHTML = userName;
+                userNameDisplay.innerText = "Name: " + userName; 
+            } else {
+                alert('Incorrect Name, Please try again');
+                validName();
+            }
+        }
+    
+        function start() {
+            resetInactivityTimer();
+            startWord.onclick = null; 
+            startWord.innerText = ". . .";
+            randomSequence = [];
+            userSequence = [];
+            level = 1;
+            levelDisplay.innerText = "Level: " + level;
+            winLoose.innerText = ''; 
+            nextRound();
+        }
+
+        function nextRound() {
+            resetInactivityTimer();
+            userSequence = [];
+            const newColor = getRandomBox();
+            randomSequence.push(newColor);
+            playSound(newColor); 
+            displayNewColor(newColor);
+
+            inactivityDuration += 500;
+        }
+    
+        function getRandomBox() {
+            const boxes = ["red", "green", "blue", "yellow"];
+            return boxes[Math.floor(Math.random() * boxes.length)];
+        }
+    
+        function displayNewColor(color) {
+            highlightBox(color);
+            setTimeout(() => {
+                enableUserInput();
+            }, 2000); 
+        }
+    
+        function highlightBox(color) {
+            const box = document.getElementById(color);
+            box.classList.add('border-pad');
+            setTimeout(() => {
+                box.classList.remove('border-pad');
+            }, 500);
+        }
+    
+        function enableUserInput() {
+            resetInactivityTimer(); 
+            document.querySelectorAll('.green-box, .red-box, .yellow-box, .blue-box').forEach(box => {
+                box.onclick = () => {
+                    playSound(box.id); 
+                    userSequence.push(box.id);
+                    highlightBox(box.id);
+                    checkUserInput();
+                };
+            });
+        }
+    
+        function playSound(color) {
+            const sound = document.getElementById(`sound-${color}`);
+            sound.currentTime = 0; 
+            sound.play();
+        }
+    
+        function checkUserInput() {
+            resetInactivityTimer(); 
+            const currentIndex = userSequence.length - 1;
+            if (userSequence[currentIndex] === randomSequence[currentIndex]) {
+                if (userSequence.length === randomSequence.length) {
+                    winLoose.innerText = 'You win! Proceed to the next round';
+                    level++;
+                    levelDisplay.innerText = "Level: " + level;
+                    clearTimeout(inactivityTimer); 
+                    setTimeout(() => {
+                        winLoose.innerText = ''; 
+                        nextRound();
+                    }, 1000);
+                }
+            } else {
+                playSound('wrong'); 
+                winLoose.innerText = 'Wrong! Game Over...';
+                clearTimeout(inactivityTimer);
+                disableUserInput(); 
+                scoreDisplay.innerText = level - 1; 
+                showGameOverModal(); 
+            }
+        }
+    
+        function disableUserInput() {
+            document.querySelectorAll('.green-box, .red-box, .yellow-box, .blue-box').forEach(box => {
+                box.onclick = null; 
+            });
+        }
+    
+        function showGameOverModal() {
+            clearTimeout(inactivityTimer); 
+            gameOverModal.style.display = 'flex'; 
+            document.getElementById('score-container').style.display = 'block'; 
+            scoreDisplay.innerText = level - 1; 
+        }
+    
+        function restartGame() {
+            gameOverModal.style.display = 'none'; 
+            document.getElementById('score-container').style.display = 'none'; 
+            start(); 
+        }
+    
+        function startOver() {
+            gameOverModal.style.display = 'none';
+            document.getElementById('score-container').style.display = 'none'; 
+            randomSequence = [];
+            userSequence = [];
+            validName(); 
+    
+            level = 1;
+            levelDisplay.innerText = "Level: " + level;
+            winLoose.innerText = ''; 
+    
+            startWord.onclick = () => start(); 
+            startWord.innerText = "Start!"; 
+        }
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer); 
+            inactivityTimer = setTimeout(() => {
+                playSound('wrong'); 
+                winLoose.innerText = 'Time out! Game Over...';
+                disableUserInput(); 
+                scoreDisplay.innerText = level - 1; 
+                showGameOverModal(); 
+            }, inactivityDuration); 
+        }
+    </script>
+</body>
+</html>
