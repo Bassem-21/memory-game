@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Game</title> 
+    <title>Memory Game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -172,6 +172,12 @@
                 justify-content: center;
                 flex-wrap: nowrap;
             }
+            .modal-content h2{
+                margin-top: 7px;
+            }
+            .modal-content p {
+                margin-top: 8px;
+            }
         }
         .main-game-contanier{
             margin-top: 70px;
@@ -190,7 +196,7 @@
                 <p id="level">LEVEL:0</p>
             </div>
         </div>
-        <div class="main-game-contanier">
+        <div class="main-game-container">
             <div class="main-box">
                 <div class="green-box" id="green">GREEN</div>
                 <div class="red-box" id="red">RED</div>
@@ -205,12 +211,12 @@
     <audio id="sound-red" src="./sounds/red.mp3"></audio>
     <audio id="sound-yellow" src="./sounds/yellow.mp3"></audio>
     <audio id="sound-blue" src="./sounds/blue.mp3"></audio>
-    <audio id="sound-wrong" src="./sounds/wrong.mp3"></audio> 
+    <audio id="sound-wrong" src="./sounds/wrong.mp3"></audio>
 
     <div class="modal" id="game-over-modal">
         <div class="modal-content">
             <h2>GAME OVER!</h2>
-            <p id="user-name-display"></p> 
+            <p id="user-name-display"></p>
             <p>SCORE: <span id="score-display">0</span></p>
             <button onclick="restartGame()">RESTART</button>
             <button onclick="startOver()">NEW GAME</button>
@@ -230,26 +236,26 @@
         let startWord = document.getElementById('start');
         let winLoose = document.getElementById('win-loose');
         let scoreDisplay = document.getElementById('score-display');
-        let userNameDisplay = document.getElementById('user-name-display'); 
+        let userNameDisplay = document.getElementById('user-name-display');
         let gameOverModal = document.getElementById('game-over-modal');
         let finalScore = document.getElementById('final-score');
         let inactivityTimer;
         let inactivityDuration = 2500;
-        let gameOver = false; 
+        let gameOver = false;
 
         validName();
-    
+
         function validName() {
             const userName = prompt('Enter your name: ');
             if (/^[a-zA-Z]+$/.test(userName)) {
                 nameTitle.innerHTML = userName;
-                userNameDisplay.innerText = "Name: " + userName; 
+                userNameDisplay.innerText = "Name: " + userName;
             } else {
                 alert('Incorrect Name, Please try again');
                 validName();
             }
         }
-    
+
         function start() {
             resetInactivityTimer();
             startWord.onclick = null; 
@@ -258,7 +264,7 @@
             userSequence = [];
             level = 0;
             gameOver = false; 
-            levelDisplay.innerText = "LEVEL: " + level;
+            levelDisplay.innerText = "LEVEL:" + level;
             winLoose.innerText = ''; 
             nextRound();
         }
@@ -271,22 +277,21 @@
             randomSequence.push(newColor);
             playSound(newColor); 
             displayNewColor(newColor);
-
             inactivityDuration += 500;
         }
-    
+
         function getRandomBox() {
             const boxes = ["red", "green", "blue", "yellow"];
             return boxes[Math.floor(Math.random() * boxes.length)];
         }
-    
+
         function displayNewColor(color) {
             highlightBox(color);
             setTimeout(() => {
                 enableUserInput();
             }, 2000); 
         }
-    
+
         function highlightBox(color) {
             const box = document.getElementById(color);
             box.classList.add('border-pad');
@@ -294,11 +299,13 @@
                 box.classList.remove('border-pad');
             }, 500);
         }
-    
+
         function enableUserInput() {
+            if (gameOver) return; 
             resetInactivityTimer(); 
             document.querySelectorAll('.green-box, .red-box, .yellow-box, .blue-box').forEach(box => {
                 box.onclick = () => {
+                    if (gameOver) return; 
                     playSound(box.id); 
                     userSequence.push(box.id);
                     highlightBox(box.id);
@@ -306,13 +313,13 @@
                 };
             });
         }
-    
+
         function playSound(color) {
             const sound = document.getElementById(`sound-${color}`);
             sound.currentTime = 0; 
             sound.play();
         }
-    
+
         function checkUserInput() {
             resetInactivityTimer(); 
             const currentIndex = userSequence.length - 1;
@@ -330,44 +337,44 @@
             } else {
                 playSound('wrong'); 
                 winLoose.innerText = 'Wrong! Game Over...';
-                clearTimeout(inactivityTimer);
                 disableUserInput(); 
                 scoreDisplay.innerText = level - 1; 
                 showGameOverModal(); 
             }
         }
-    
+
         function disableUserInput() {
             document.querySelectorAll('.green-box, .red-box, .yellow-box, .blue-box').forEach(box => {
                 box.onclick = null; 
             });
         }
-    
+
         function showGameOverModal() {
             clearTimeout(inactivityTimer); 
+            disableUserInput(); 
             gameOverModal.style.display = 'flex'; 
             document.getElementById('score-container').style.display = 'block'; 
             scoreDisplay.innerText = level - 1; 
             gameOver = true; 
         }
-    
+
         function restartGame() {
             gameOverModal.style.display = 'none'; 
             document.getElementById('score-container').style.display = 'none'; 
             start(); 
         }
-    
+
         function startOver() {
             gameOverModal.style.display = 'none';
             document.getElementById('score-container').style.display = 'none'; 
             randomSequence = [];
             userSequence = [];
             validName(); 
-    
+
             level = 1;
             levelDisplay.innerText = "LEVEL: " + level;
             winLoose.innerText = ''; 
-    
+
             startWord.onclick = () => start(); 
             startWord.innerText = "Start!"; 
         }
