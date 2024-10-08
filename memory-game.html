@@ -40,7 +40,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding-right: 20px;
+            padding-right: 30px;
             font-size: 18px; 
         }
         .main-box {
@@ -144,12 +144,9 @@
         }
 
         @media (max-width: 600px) {
-            .main-box{
-                margin: auto;
-            }
             .middle-paragraph {
                 font-size: 20px;
-                padding-left: 140px; 
+                padding-left: 120px; 
             }
             .status {
                 padding-right: 25px;
@@ -161,10 +158,12 @@
                 font-size: 14px; 
             }
             .main-box{
+                grid-gap: 15px;
+                margin: auto;
+                height: auto;
                 display: grid;
-                padding: 8px;
+                padding: 15px;
                 grid-template-columns: repeat(2, 1fr);
-                grid-gap: 10px; 
             }
             .top-part{
                 display: flex;
@@ -185,18 +184,18 @@
 <body>
     <div class="top-part-container">
         <div class="top-part">
-            <p class="middle-paragraph" id="start" onclick="start()">Start!</p>
+            <p class="middle-paragraph" id="start" onclick="start()">START!</p>
             <div class="status">
                 <p id="name-title"></p>
-                <p id="level">Level: 1</p>
+                <p id="level">LEVEL:0</p>
             </div>
         </div>
         <div class="main-game-contanier">
             <div class="main-box">
-                <div class="green-box" id="green">Green</div>
-                <div class="red-box" id="red">Red</div>
-                <div class="yellow-box" id="yellow">Yellow</div>
-                <div class="blue-box" id="blue">Blue</div>
+                <div class="green-box" id="green">GREEN</div>
+                <div class="red-box" id="red">RED</div>
+                <div class="yellow-box" id="yellow">YELLOW</div>
+                <div class="blue-box" id="blue">BLUE</div>
             </div>
         </div>
         <p class="win-loose" id="win-loose"></p>
@@ -210,9 +209,9 @@
 
     <div class="modal" id="game-over-modal">
         <div class="modal-content">
-            <h2>Game Over!</h2>
+            <h2>GAME OVER!</h2>
             <p id="user-name-display"></p> 
-            <p>Your score: <span id="score-display">0</span></p>
+            <p>SCORE: <span id="score-display">0</span></p>
             <button onclick="restartGame()">RESTART</button>
             <button onclick="startOver()">NEW GAME</button>
         </div>
@@ -254,12 +253,12 @@
         function start() {
             resetInactivityTimer();
             startWord.onclick = null; 
-            startWord.innerText = ". . .";
+            startWord.innerText = "...";
             randomSequence = [];
             userSequence = [];
-            level = 1;
+            level = 0;
             gameOver = false; 
-            levelDisplay.innerText = "Level: " + level;
+            levelDisplay.innerText = "LEVEL: " + level;
             winLoose.innerText = ''; 
             nextRound();
         }
@@ -321,7 +320,7 @@
                 if (userSequence.length === randomSequence.length) {
                     winLoose.innerText = 'You win! Proceed to the next round';
                     level++;
-                    levelDisplay.innerText = "Level: " + level;
+                    levelDisplay.innerText = "LEVEL: " + level;
                     clearTimeout(inactivityTimer); 
                     setTimeout(() => {
                         winLoose.innerText = ''; 
@@ -366,7 +365,7 @@
             validName(); 
     
             level = 1;
-            levelDisplay.innerText = "Level: " + level;
+            levelDisplay.innerText = "LEVEL: " + level;
             winLoose.innerText = ''; 
     
             startWord.onclick = () => start(); 
