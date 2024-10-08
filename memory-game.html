@@ -414,7 +414,7 @@
             resetInactivityTimer(); 
             document.querySelectorAll('.green-box, .red-box, .yellow-box, .blue-box').forEach(box => {
                 box.onclick = () => {
-                    if (!isMuted) playSound(box.id); 
+                     playSound(box.id); 
                     userSequence.push(box.id);
                     highlightBox(box.id);
                     checkUserInput();
@@ -423,6 +423,7 @@
         }
     
         function playSound(color) {
+            if(isMuted) return;
             const sound = document.getElementById(`sound-${color}`);
             sound.currentTime = 0; 
             sound.play();
@@ -443,7 +444,7 @@
                     }, 1000);
                 }
             } else {
-                if (!isMuted) playSound('wrong'); 
+                playSound('wrong'); 
                 winLoose.innerText = 'Wrong! Game Over...';
                 clearTimeout(inactivityTimer);
                 disableUserInput(); 
@@ -500,16 +501,13 @@
         }
 
         function toggleMute() {
-            isMuted = !isMuted; 
-            if (isMuted) {
-                muteButton.classList.add('mute-button-pressed');
-                muteButton.innerHTML = '<i class="fa-solid fa-volume-off"></i>'; 
-            } else {
-                muteButton.classList.remove('mute-button-pressed');
-                muteButton.innerHTML = '<i class="fa-solid fa-volume-up"></i>'; 
+                isMuted = !isMuted; 
+                if (isMuted) {
+                    muteButton.classList.add('mute-button-pressed');
+                } else {
+                    muteButton.classList.remove('mute-button-pressed');
+                }
             }
-        }
-
         function showInstructions() {
             document.getElementById('instructions-modal').style.display = 'flex';
         }
