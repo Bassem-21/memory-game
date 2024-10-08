@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         * {
             box-sizing: border-box;
@@ -149,7 +150,7 @@
         @media (max-width: 600px) {
             .middle-paragraph {
                 font-size: 20px;
-                padding-left: 120px; 
+                padding-left: 50px; 
             }
             .status {
                 padding-right: 25px;
@@ -181,6 +182,14 @@
             .modal-content p {
                 margin-top: 8px;
             }
+            .mute-button{
+            background-color: beige;
+            padding: 18px 8px 18px 8px;
+            border: none;
+            margin-right: 7px;
+            font-size: 12px;
+            border-radius: 17px;
+        }
         }
         .main-game-container {
             margin-top: 70px;
@@ -191,12 +200,21 @@
         .mute-button{
             background-color: beige;
             border: none;
-            padding: 10px;
+            padding: 10px 14px 10px 14px;
             margin-right: 7px;
-            height: 45px;
             border-radius: 17px;
             font-family: "Press Start 2P", system-ui;
             cursor: pointer;
+        }
+        .mute-button-pressed{
+            background-color: rgb(255, 217, 0);
+            border: none;
+            padding: 10px 14px 10px 14px;
+            margin-right: 7px;
+            border-radius: 17px;
+            font-family: "Press Start 2P", system-ui;
+            cursor: pointer;
+            color: beige;
         }
         .mute-button:hover{
             background-color: rgb(255, 217, 0);
@@ -214,10 +232,10 @@
             <p class="middle-paragraph" id="start" onclick="start()">START!</p>
             <div class="status">
                 <p id="name-title"></p>
-                <p id="level">LEVEL: 1</p>
+                <p id="level">LEVEL:1</p>
             </div>
             <div class="mute-container">
-                <button class="mute-button" id="mute-button" onclick="toggleMute()">Mute</button>
+                <button class="mute-button" id="mute-button" onclick="toggleMute()"><i class="fa-solid fa-volume-off"></i></button>
             </div>
         </div>
         <div class="main-game-container">
@@ -263,13 +281,14 @@
         let userNameDisplay = document.getElementById('user-name-display'); 
         let gameOverModal = document.getElementById('game-over-modal');
         let finalScore = document.getElementById('final-score');
+        let muteButton = document.getElementById('mute-button');
         let inactivityTimer;
         let inactivityDuration = 2500;
         let gameOver = false; 
         let isMuted = false;
 
-        validName();
-    
+        // validName();
+
         function validName() {
             const userName = prompt('Enter your name: ');
             if (/^[a-zA-Z]+$/.test(userName)) {
@@ -287,9 +306,9 @@
             startWord.innerText = "...";
             randomSequence = [];
             userSequence = [];
-            level = 0;
+            level = 1;
             gameOver = false; 
-            levelDisplay.innerText = "LEVEL: " + level;
+            levelDisplay.innerText = "LEVEL:" + level;
             winLoose.innerText = ''; 
             nextRound();
         }
@@ -353,7 +372,7 @@
                 if (userSequence.length === randomSequence.length) {
                     winLoose.innerText = 'You win! Proceed to the next round';
                     level++;
-                    levelDisplay.innerText = "LEVEL: " + level;
+                    levelDisplay.innerText = "LEVEL:" + level;
                     clearTimeout(inactivityTimer); 
                     setTimeout(() => {
                         winLoose.innerText = ''; 
@@ -418,9 +437,12 @@
         }
 
         function toggleMute() {
-            isMuted = !isMuted;
-            const buttonText = isMuted ? 'Unmute' : 'Mute';
-            document.getElementById('mute-button').innerText = buttonText;
+            if (isMuted = !isMuted){
+            muteButton.classList.add('mute-button-pressed')
+            }
+            else{
+                muteButton.classList.remove('mute-button-pressed')
+            }
         }
     </script>
 </body>
