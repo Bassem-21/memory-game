@@ -26,7 +26,7 @@
         }
         .middle-paragraph {
             margin: auto;
-            padding: 20px 20px 20px 200px; 
+            padding: 20px 20px 20px 250px;
             letter-spacing: 2px; 
             font-size: 24px; 
             color: white;
@@ -132,6 +132,9 @@
             font-size: 16px; 
             font-family: "Press Start 2P", system-ui;
         }
+        .modal button:hover {
+            background-color: rgb(25, 130, 0);
+        }
 
         .score-display {
             text-align: center;
@@ -139,7 +142,7 @@
             font-size: 20px; 
             display: none;
         }
-        #name-title{
+        #name-title {
             margin-bottom: 8px;
         }
 
@@ -157,7 +160,7 @@
                 width: 140px;
                 font-size: 14px; 
             }
-            .main-box{
+            .main-box {
                 grid-gap: 15px;
                 margin: auto;
                 height: auto;
@@ -165,25 +168,43 @@
                 padding: 15px;
                 grid-template-columns: repeat(2, 1fr);
             }
-            .top-part{
+            .top-part {
                 display: flex;
                 margin-bottom: 40px;
                 margin-top: 40px;
                 justify-content: center;
                 flex-wrap: nowrap;
             }
-            .modal-content h2{
+            .modal-content h2 {
                 margin-top: 7px;
             }
             .modal-content p {
                 margin-top: 8px;
             }
         }
-        .main-game-contanier{
+        .main-game-container {
             margin-top: 70px;
         }
-        .top-part-contanier{
+        .top-part-container {
             margin-top: 25px;
+        }
+        .mute-button{
+            background-color: beige;
+            border: none;
+            padding: 10px;
+            margin-right: 7px;
+            height: 45px;
+            border-radius: 17px;
+            font-family: "Press Start 2P", system-ui;
+            cursor: pointer;
+        }
+        .mute-button:hover{
+            background-color: rgb(255, 217, 0);
+            color: beige;
+        }
+        .mute-container{
+            display:flex;
+            align-items: center;
         }
     </style>
 </head>
@@ -193,15 +214,18 @@
             <p class="middle-paragraph" id="start" onclick="start()">START!</p>
             <div class="status">
                 <p id="name-title"></p>
-                <p id="level">LEVEL:0</p>
+                <p id="level">LEVEL: 1</p>
+            </div>
+            <div class="mute-container">
+                <button class="mute-button" id="mute-button" onclick="toggleMute()">Mute</button>
             </div>
         </div>
-        <div class="main-game-contanier">
+        <div class="main-game-container">
             <div class="main-box">
-                <div class="green-box" id="green">GREEN</div>
-                <div class="red-box" id="red">RED</div>
-                <div class="yellow-box" id="yellow">YELLOW</div>
-                <div class="blue-box" id="blue">BLUE</div>
+                <div class="green-box" id="green" aria-label="Green Box">GREEN</div>
+                <div class="red-box" id="red" aria-label="Red Box">RED</div>
+                <div class="yellow-box" id="yellow" aria-label="Yellow Box">YELLOW</div>
+                <div class="blue-box" id="blue" aria-label="Blue Box">BLUE</div>
             </div>
         </div>
         <p class="win-loose" id="win-loose"></p>
@@ -242,6 +266,7 @@
         let inactivityTimer;
         let inactivityDuration = 2500;
         let gameOver = false; 
+        let isMuted = false;
 
         validName();
     
@@ -314,9 +339,11 @@
         }
     
         function playSound(color) {
-            const sound = document.getElementById(`sound-${color}`);
-            sound.currentTime = 0; 
-            sound.play();
+            if (!isMuted) {
+                const sound = document.getElementById(`sound-${color}`);
+                sound.currentTime = 0; 
+                sound.play();
+            }
         }
     
         function checkUserInput() {
@@ -388,6 +415,12 @@
                 scoreDisplay.innerText = level - 1; 
                 showGameOverModal(); 
             }, inactivityDuration); 
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const buttonText = isMuted ? 'Unmute' : 'Mute';
+            document.getElementById('mute-button').innerText = buttonText;
         }
     </script>
 </body>
