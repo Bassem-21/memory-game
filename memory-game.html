@@ -500,11 +500,13 @@
         }
 
         function toggleMute() {
-            if (isMuted = !isMuted){
-            muteButton.classList.add('mute-button-pressed')
-            }
-            else{
-            muteButton.classList.remove('mute-button-pressed')
+            isMuted = !isMuted; 
+            if (isMuted) {
+                muteButton.classList.add('mute-button-pressed');
+                muteButton.innerHTML = '<i class="fa-solid fa-volume-off"></i>'; 
+            } else {
+                muteButton.classList.remove('mute-button-pressed');
+                muteButton.innerHTML = '<i class="fa-solid fa-volume-up"></i>'; 
             }
         }
 
