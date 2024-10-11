@@ -230,10 +230,6 @@
             cursor: pointer;
             color: beige;
         }
-        .mute-button:hover{
-            background-color: rgb(255, 217, 0);
-            color: beige;
-        }
         .mute-container{
             display:flex;
             align-items: center;
@@ -423,7 +419,7 @@
         }
     
         function playSound(color) {
-            if(isMuted) return;
+            if(isMuted || gameOver) return;
             const sound = document.getElementById(`sound-${color}`);
             sound.currentTime = 0; 
             sound.play();
@@ -445,8 +441,8 @@
                 }
             } else {
                 playSound('wrong'); 
+                clearTimeout(inactivityTimer); 
                 winLoose.innerText = 'Wrong! Game Over...';
-                clearTimeout(inactivityTimer);
                 disableUserInput(); 
                 scoreDisplay.innerText = level - 1; 
                 showGameOverModal(); 
@@ -490,6 +486,7 @@
         }
 
         function resetInactivityTimer() {
+            if(gameOver) return
             clearTimeout(inactivityTimer); 
             inactivityTimer = setTimeout(() => {
                 if (!isMuted) playSound('wrong'); 
